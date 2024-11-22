@@ -8,7 +8,7 @@ void	philo_eat(t_param *param)
 	log_fork(param);
 	pthread_mutex_lock(param->second);
 	gettimeofday(&time, NULL);
-	param->death = time.tv_sec * 1000 + time.tv_usec / 1000 + param->eat;
+	param->death = time.tv_sec * 1000 + time.tv_usec / 1000 + param->die + param->eat - param->start;
 	log_eat(param);
 	usleep(param->eat * 1000);
 	pthread_mutex_unlock(param->first);

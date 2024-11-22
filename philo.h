@@ -17,6 +17,7 @@ typedef struct s_philo {
 }		t_philo;
 
 typedef struct s_param {
+	int				start;
 	int				die;
 	int				eat;
 	int				sleep;
@@ -30,6 +31,7 @@ typedef struct s_param {
 
 typedef struct s_table {
 	int				nb;
+	int				start;
 	pthread_t		*thread;
 	pthread_mutex_t	mic;
 	pthread_mutex_t	*fork;

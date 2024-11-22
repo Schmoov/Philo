@@ -1,5 +1,6 @@
 #include "../philo.h"
 #include <pthread.h>
+#include <sys/time.h>
 
 bool	parse(int argc, char **argv, t_philo *input)
 {
@@ -33,9 +34,28 @@ void	bon_apetit(t_philo *input, t_table *table)
 	}
 }
 
-void	reaper()
+void	reaper(t_philo *input, t_table *table)
 {
-	sleep(120);
+	int				i;
+	int				time;
+	struct timeval	tv;
+
+	while (1)
+	{
+		usleep(5);
+		i = 0;
+		gettimeofday(&tv, NULL);
+		time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - table->start;
+		while (i < input->nb)
+		{
+			if (table->seat[i].death < time)
+			{
+				printf("%d %d died (%d)\n", time, i + 1, table->seat[i].death);
+				exit(69);
+			}
+			i++;
+		}
+	}
 }
 
 int	main(int argc, char **argv)
@@ -59,5 +79,5 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	bon_apetit(&input, &table);
-	reaper();
+	reaper(&input, &table);
 }

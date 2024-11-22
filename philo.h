@@ -20,7 +20,6 @@ typedef struct s_param {
 	int				die;
 	int				eat;
 	int				sleep;
-	int				meals;
 
 	int				id;
 	int				death;
@@ -31,7 +30,9 @@ typedef struct s_param {
 
 typedef struct s_table {
 	int				nb;
-	pthread_mutex_t	*chopstick;
+	pthread_t		*thread;
+	pthread_mutex_t	mic;
+	pthread_mutex_t	*fork;
 	t_param			*seat;
 }					t_table;
 
@@ -42,7 +43,12 @@ void	log_eat(t_param *param);
 void	log_sleep(t_param *param);
 void	log_think(t_param *param);
 
+bool	mise_en_place(t_philo *input, t_table *table);
+bool	mep_alloc(t_philo *input, t_table *table);
+void	mep_fork(t_table *table);
+void	mep_seat(t_philo *input, t_table *table);
+
+void	*philosophize(void *param);
 void	philo_eat(t_param *param);
 void	philo_sleep(t_param *param);
-void	philosophize(t_param *param);
 #endif

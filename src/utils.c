@@ -6,7 +6,7 @@
 /*   By: parden <parden@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 11:32:44 by parden            #+#    #+#             */
-/*   Updated: 2024/11/19 18:56:50 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/22 20:02:02 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	get_int(char *nptr, bool *err)
 		res = 10 * res + nptr[i] - '0';
 		i++;
 	}
-	if (nptr[i])
+	if (nptr[i] || res > INT_MAX)
 		*err = true;
 	return (res);
 }

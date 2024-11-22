@@ -40,8 +40,8 @@ void	mep_seat(t_philo *input, t_table *table)
 		curr->eat = input->eat;
 		curr->sleep = input->sleep;
 		curr->id = i + 1;
-		curr->first = &(table->fork[i ? i + 1 : table->nb - 1]);
-		curr->second = &(table->fork[i ? ((i + 1) % table->nb) : 0]);
+		curr->first = &(table->fork[i ? i : table->nb - 1]);
+		curr->second = &(table->fork[i ? (i - 1): 0]);
 		curr->mic = &(table->mic);
 		i++;
 	}

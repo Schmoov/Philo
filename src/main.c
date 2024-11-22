@@ -10,10 +10,10 @@ bool	parse(int argc, char **argv, t_philo *input)
 	input->meals = 0;
 	ptr = (int *)input;
 	err = false;
-	i = 1;
-	while (i < argc)
+	i = 0;
+	while (i + 1 < argc)
 	{
-		ptr[i - 1] = get_int(argv[i], &err);
+		ptr[i] = get_int(argv[i + 1], &err);
 		i++;
 	}
 	return (!err);

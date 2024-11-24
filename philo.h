@@ -25,6 +25,7 @@ typedef struct s_param {
 
 	int				id;
 	int				meal;
+	int				skip;
 	int				death;
 	pthread_mutex_t	*first;
 	pthread_mutex_t	*second;

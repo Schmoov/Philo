@@ -44,6 +44,7 @@ void	mep_seat(t_philo *input, t_table *table)
 		curr->sleep = input->sleep;
 		curr->id = i + 1;
 		curr->meal = 0;
+		curr->skip = 0;
 		curr->death = input->die;
 		curr->first = &(table->fork[i ? i : table->nb - 1]);
 		curr->second = &(table->fork[i ? i - 1 : 0]);

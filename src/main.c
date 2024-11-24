@@ -8,7 +8,7 @@ bool	parse(int argc, char **argv, t_philo *input)
 	int		*ptr;
 	bool	err;
 
-	input->meals = 0;
+	input->meals = INT_MAX;
 	ptr = (int *)input;
 	err = false;
 	i = 0;

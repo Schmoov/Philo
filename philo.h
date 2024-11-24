@@ -17,12 +17,14 @@ typedef struct s_philo {
 }		t_philo;
 
 typedef struct s_param {
+	int				nb;
 	int				start;
 	int				die;
 	int				eat;
 	int				sleep;
 
 	int				id;
+	int				meal;
 	int				death;
 	pthread_mutex_t	*first;
 	pthread_mutex_t	*second;

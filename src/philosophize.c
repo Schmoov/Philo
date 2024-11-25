@@ -2,7 +2,7 @@
 
 void	philo_skip_first(t_param *param)
 {
-	if (!(param->id % 2))
+	if (param->id % 2)
 		usleep(param->eat * 1000);
 }
 
@@ -10,10 +10,10 @@ void	philo_skip_loop(t_param *param)
 {
 	if (param->nb % 2)
 	{
-		if (param->id == param->skip + 1)
+		if (param->skip == param->nb / 2)
 		{
-			usleep(param->eat * 1000 * 2);
-			param->skip = (param->skip + 1) % param->nb;
+			param->skip = 0;
+			usleep(param->eat * 1000);
 		}
 	}
 }
@@ -28,9 +28,9 @@ void	philo_eat(t_param *param)
 	gettimeofday(&time, NULL);
 	param->death = time.tv_sec * 1000 + time.tv_usec / 1000 + param->die - param->start;
 	log_eat(param);
-	param->skip = (param->skip + 2) % param->nb;
 	usleep(param->eat * 1000);
 	param->meal++;
+	param->skip++;
 	pthread_mutex_unlock(param->first);
 	pthread_mutex_unlock(param->second);
 }

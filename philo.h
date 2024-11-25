@@ -13,7 +13,7 @@ typedef struct s_philo {
 	int	die;
 	int	eat;
 	int	sleep;
-	int	meals;
+	int	servings;
 }		t_philo;
 
 typedef struct s_param {
@@ -27,8 +27,10 @@ typedef struct s_param {
 	int				meal;
 	int				skip;
 	int				death;
+	bool			hungry;
 	pthread_mutex_t	*first;
 	pthread_mutex_t	*second;
+	pthread_mutex_t	*dead;
 	pthread_mutex_t	*mic;
 }					t_param;
 
@@ -38,6 +40,7 @@ typedef struct s_table {
 	pthread_t		*thread;
 	pthread_mutex_t	mic;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	*dead;
 	t_param			*seat;
 }					t_table;
 

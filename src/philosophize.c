@@ -18,28 +18,40 @@ void	philo_skip_loop(t_param *param)
 	}
 }
 
-void	philo_eat(t_param *param)
+void	philo_get_forks(t_param *param)
 {
 	struct timeval	time;
 
 	pthread_mutex_lock(param->first);
 	log_fork(param);
 	pthread_mutex_lock(param->second);
+	pthread_mutex_lock(param->dead);
 	gettimeofday(&time, NULL);
 	param->death = time.tv_sec * 1000 + time.tv_usec / 1000 + param->die - param->start;
-	log_eat(param);
-	usleep(param->eat * 1000);
-	param->meal++;
-	param->skip++;
-	pthread_mutex_unlock(param->first);
-	pthread_mutex_unlock(param->second);
+	pthread_mutex_unlock(param->dead);
+}
+
+void	philo_eat(t_param *param)
+{
+	if (param->hungry)
+	{
+		log_eat(param);
+		usleep(param->eat * 1000);
+		param->meal++;
+		param->skip++;
+	}
+		pthread_mutex_unlock(param->first);
+		pthread_mutex_unlock(param->second);
 }
 
 void	philo_sleep(t_param *param)
 {
+	if (param->hungry)
+	{
 		log_sleep(param);
 		usleep(param->sleep * 1000);
 		log_think(param);
+	}
 }
 
 void	*philosophize(void *param)
@@ -48,9 +60,10 @@ void	*philosophize(void *param)
 
 	p = param;
 	philo_skip_first(p);
-	while (1)
+	while (p->hungry)
 	{
 		philo_skip_loop(p);
+		philo_get_forks(p);
 		philo_eat(p);
 		philo_sleep(p);
 	}

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophize.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
+/*   Updated: 2024/11/25 19:49:22 by parden           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
 
 void	philo_skip_first(t_param *param)
@@ -27,7 +39,8 @@ void	philo_get_forks(t_param *param)
 	pthread_mutex_lock(param->second);
 	pthread_mutex_lock(param->dead);
 	gettimeofday(&time, NULL);
-	param->death = time.tv_sec * 1000 + time.tv_usec / 1000 + param->die - param->start;
+	param->death = time.tv_sec * 1000 + time.tv_usec / 1000
+		+ param->die - param->start;
 	pthread_mutex_unlock(param->dead);
 }
 
@@ -40,8 +53,8 @@ void	philo_eat(t_param *param)
 		param->meal++;
 		param->skip++;
 	}
-		pthread_mutex_unlock(param->first);
-		pthread_mutex_unlock(param->second);
+	pthread_mutex_unlock(param->first);
+	pthread_mutex_unlock(param->second);
 }
 
 void	philo_sleep(t_param *param)

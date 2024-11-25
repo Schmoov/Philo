@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
+/*   Updated: 2024/11/25 20:20:21 by parden           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
 #include <pthread.h>
 #include <sys/time.h>
@@ -80,6 +92,23 @@ void	wrap_up(t_philo *input, t_table *table)
 		pthread_join(table->thread[i++], NULL);
 }
 
+void	dishes(t_philo *input, t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < input->nb)
+	{
+		pthread_mutex_destroy(&table->fork[i]);
+		pthread_mutex_destroy(&table->dead[i++]);
+	}
+	pthread_mutex_destroy(&table->mic);
+	free(table->thread);
+	free(table->fork);
+	free(table->dead);
+	free(table->seat);
+}
+
 int	main(int argc, char **argv)
 {
 	t_philo	input;
@@ -95,7 +124,7 @@ int	main(int argc, char **argv)
 		printf("User skill issue\n");
 		return (1);
 	}
-	if(!mise_en_place(&input, &table))
+	if (!mise_en_place(&input, &table))
 	{
 		printf("The dining room is full\n");
 		return (1);
@@ -103,4 +132,5 @@ int	main(int argc, char **argv)
 	bon_apetit(&input, &table);
 	reaper(&input, &table);
 	wrap_up(&input, &table);
+	dishes(&input, &table);
 }

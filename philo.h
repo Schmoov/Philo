@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
+/*   Updated: 2024/11/25 19:49:58 by parden           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 # include <stdio.h>
@@ -44,7 +56,7 @@ typedef struct s_table {
 	t_param			*seat;
 }					t_table;
 
-int	get_int(char *nptr, bool *err);
+int		get_int(char *nptr, bool *err);
 
 void	log_fork(t_param *param);
 void	log_eat(t_param *param);

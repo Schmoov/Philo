@@ -6,11 +6,12 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/11/25 19:49:22 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 13:35:13 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
+#include <pthread.h>
 
 void	philo_skip_first(t_param *param)
 {
@@ -30,23 +31,26 @@ void	philo_skip_loop(t_param *param)
 	}
 }
 
-void	philo_get_forks(t_param *param)
+bool	philo_get_forks(t_param *param)
 {
 	struct timeval	time;
 
 	pthread_mutex_lock(param->first);
 	log_fork(param);
 	pthread_mutex_lock(param->second);
-	pthread_mutex_lock(param->dead);
 	gettimeofday(&time, NULL);
+	pthread_mutex_lock(param->over_lock);
+	if (*param->over)
+		return (pthread_mutex_unlock(param->over_lock), false);
 	param->death = time.tv_sec * 1000 + time.tv_usec / 1000
 		+ param->die - param->start;
-	pthread_mutex_unlock(param->dead);
+	pthread_mutex_unlock(param->over_lock);
+	return (true);
 }
 
-void	philo_eat(t_param *param)
+void	philo_eat(t_param *param, bool is_over)
 {
-	if (param->hungry)
+	if (!is_over)
 	{
 		log_eat(param);
 		usleep(param->eat * 1000);
@@ -59,25 +63,25 @@ void	philo_eat(t_param *param)
 
 void	philo_sleep(t_param *param)
 {
-	if (param->hungry)
-	{
-		log_sleep(param);
-		usleep(param->sleep * 1000);
-		log_think(param);
-	}
+	log_sleep(param);
+	usleep(param->sleep * 1000);
+	log_think(param);
 }
 
 void	*philosophize(void *param)
 {
 	t_param	*p;
+	bool	is_over;
 
 	p = param;
 	philo_skip_first(p);
-	while (p->hungry)
+	while (1)
 	{
 		philo_skip_loop(p);
-		philo_get_forks(p);
-		philo_eat(p);
+		is_over = philo_get_forks(p);
+		philo_eat(p, is_over);
+		if (is_over)
+			break;
 		philo_sleep(p);
 	}
 	return (NULL);

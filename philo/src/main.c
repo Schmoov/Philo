@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/11/25 20:20:21 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 13:19:10 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <pthread.h>
 #include <sys/time.h>
 
-bool	parse(int argc, char **argv, t_philo *input)
+bool	parse(int argc, char **argv, t_input *input)
 {
 	int		i;
 	int		*ptr;
@@ -32,7 +32,7 @@ bool	parse(int argc, char **argv, t_philo *input)
 	return (!err);
 }
 
-void	bon_apetit(t_philo *input, t_table *table)
+void	bon_apetit(t_input *input, t_table *table)
 {
 	int			i;
 	pthread_t	curr;
@@ -46,72 +46,73 @@ void	bon_apetit(t_philo *input, t_table *table)
 	}
 }
 
-void	reaper(t_philo *input, t_table *table)
+void	reaper(t_input *input, t_table *table)
 {
 	int				i;
 	int				time;
-	bool			casualty;
+	int				casualty;
+	bool			all_fed;
 	struct timeval	tv;
 
 	while (1)
 	{
-		casualty = false;
 		usleep(5);
 		i = 0;
 		gettimeofday(&tv, NULL);
 		time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - table->start;
+		pthread_mutex_lock(&table->over_lock);
 		while (i < input->nb)
 		{
-			pthread_mutex_lock(&table->dead[i]);
+			casualty = -1;
+			all_fed = true;
 			if (table->seat[i].death < time)
 			{
-				pthread_mutex_lock(&table->mic);
-				printf("%d %d died\n", time, i + 1);
-				pthread_mutex_unlock(&table->mic);
-				casualty = true;
+				casualty = i;
+				break;
 			}
-			pthread_mutex_unlock(&table->dead[i]);
-			if (table->seat[i].meal >= input->servings)
-				table->seat[i].hungry = false;
+			if (table->seat[i].meal < input->servings)
+				all_fed = false;
 			i++;
-			if (casualty)
-				return ;
 		}
+		if (casualty != -1)
+		{
+			table->over = true;
+			pthread_mutex_lock(&table->mic);
+			printf("%d %d died\n", time, i + 1);
+			pthread_mutex_unlock(&table->mic);
+			return;
+		}
+		else if (all_fed)
+		{
+			table->over = true;
+			return ;
+		}
+		pthread_mutex_unlock(&table->over_lock);
 	}
 }
 
-void	wrap_up(t_philo *input, t_table *table)
+void	wrap_up(t_input *input, t_table *table)
 {
 	int	i;
 
-	i = 0;
-	while (i < input->nb)
-		table->seat[i++].hungry = false;
 	i = 0;
 	while (i < input->nb)
 		pthread_join(table->thread[i++], NULL);
-}
-
-void	dishes(t_philo *input, t_table *table)
-{
-	int	i;
-
 	i = 0;
 	while (i < input->nb)
 	{
-		pthread_mutex_destroy(&table->fork[i]);
-		pthread_mutex_destroy(&table->dead[i++]);
+		pthread_mutex_destroy(&table->fork[i++]);
 	}
+	pthread_mutex_destroy(&table->over_lock);
 	pthread_mutex_destroy(&table->mic);
 	free(table->thread);
 	free(table->fork);
-	free(table->dead);
 	free(table->seat);
 }
 
 int	main(int argc, char **argv)
 {
-	t_philo	input;
+	t_input	input;
 	t_table	table;
 
 	if (argc < 5 || argc > 6)
@@ -132,5 +133,4 @@ int	main(int argc, char **argv)
 	bon_apetit(&input, &table);
 	reaper(&input, &table);
 	wrap_up(&input, &table);
-	dishes(&input, &table);
 }

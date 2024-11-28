@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 17:07:16 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 18:12:32 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,21 @@ void	mep_seat(t_philo *philo, t_table *table)
 	{
 		curr = &table->seat[i];
 		curr->phi = philo;
-
 		curr->id = i + 1;
 		curr->meal = 0;
 		curr->skip = i / 2;
 		curr->death = philo->die;
 		curr->state = &table->state;
-		curr->first = &table->fork[i ? i : philo->nb - 1];
-		curr->second = &table->fork[i ? i - 1 : 0];
+		if (i)
+		{
+			curr->first = &table->fork[i];
+			curr->second = &table->fork[i - 1];
+		}
+		else
+		{
+			curr->first = &table->fork[philo->nb - 1];
+			curr->second = &table->fork[0];
+		}
 		i++;
 	}
 }

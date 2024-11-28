@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 18:03:47 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 18:15:28 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	reaper(t_philo *philo, t_table *table)
 			if (table->seat[i].death < time)
 			{
 				casualty = i;
-				break;
+				break ;
 			}
 			if (table->seat[i].meal < philo->servings)
 				all_fed = false;
@@ -78,7 +78,7 @@ void	reaper(t_philo *philo, t_table *table)
 			if (casualty != -1)
 				printf("%d %d died\n", time, i + 1);
 			pthread_mutex_unlock(&table->state);
-			return;
+			return ;
 		}
 		pthread_mutex_unlock(&table->state);
 	}
@@ -106,10 +106,7 @@ int	main(int argc, char **argv)
 	t_table	table;
 
 	if (argc < 5 || argc > 6)
-	{
-		printf("Usage: philo nb die eat sleep [meals]\n");
-		return (1);
-	}
+		return (printf("Usage: philo nb die eat sleep [meals]\n"));
 	if (!parse(argc, argv, &input))
 	{
 		printf("User skill issue\n");

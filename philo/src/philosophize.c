@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 17:31:30 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 18:13:50 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ bool	philo_get_forks(t_param *p)
 	pthread_mutex_lock(p->second);
 	gettimeofday(&time, NULL);
 	pthread_mutex_lock(p->state);
-	p->death = time.tv_sec * 1000 + time.tv_usec / 1000 + p->phi->die - p->phi->start;
+	p->death = time.tv_sec * 1000 + time.tv_usec / 1000
+		+ p->phi->die - p->phi->start;
 	pthread_mutex_unlock(p->state);
 	return (true);
 }
@@ -54,10 +55,6 @@ void	philo_eat(t_param *p)
 	p->skip++;
 	pthread_mutex_unlock(p->first);
 	pthread_mutex_unlock(p->second);
-}
-
-void	philo_sleep(t_param *p)
-{
 	log_sleep(p);
 	usleep(p->phi->sleep * 1000);
 	log_think(p);
@@ -76,7 +73,6 @@ void	*philosophize(void *param)
 		philo_skip_loop(p);
 		philo_get_forks(p);
 		philo_eat(p);
-		philo_sleep(p);
 		pthread_mutex_lock(p->state);
 	}
 	pthread_mutex_unlock(p->state);

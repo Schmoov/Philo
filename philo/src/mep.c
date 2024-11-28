@@ -6,13 +6,13 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 14:02:57 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 17:07:16 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-bool	mep_alloc(t_input *input, t_table *table)
+bool	mep_alloc(t_philo *input, t_table *table)
 {
 	int	n;
 
@@ -29,56 +29,48 @@ bool	mep_alloc(t_input *input, t_table *table)
 	return (true);
 }
 
-void	mep_mutex(t_input *input, t_table *table)
+void	mep_mutex(t_philo *input, t_table *table)
 {
 	int	i;
 
-	pthread_mutex_init(&table->mic, NULL);
-	pthread_mutex_init(&table->over_lock, NULL);
+	pthread_mutex_init(&table->state, NULL);
 	i = 0;
 	while (i < input->nb)
-		pthread_mutex_init(&(table->fork[i++]), NULL);
+		pthread_mutex_init(&table->fork[i++], NULL);
 }
 
-void	mep_seat(t_input *input, t_table *table)
+void	mep_seat(t_philo *philo, t_table *table)
 {
 	int				i;
 	t_param			*curr;
 
 	i = 0;
-	while (i < input->nb)
+	while (i < philo->nb)
 	{
 		curr = &table->seat[i];
-		curr->nb = input->nb;
-		curr->die = input->die;
-		curr->eat = input->eat;
-		curr->sleep = input->sleep;
-		curr->servings = input->servings;
+		curr->phi = philo;
 
-		curr->start = table->start;
 		curr->id = i + 1;
 		curr->meal = 0;
 		curr->skip = i / 2;
-		curr->death = input->die;
-		curr->over = &table->over;
-		curr->first = &table->fork[i ? i : input->nb - 1];
+		curr->death = philo->die;
+		curr->state = &table->state;
+		curr->first = &table->fork[i ? i : philo->nb - 1];
 		curr->second = &table->fork[i ? i - 1 : 0];
-		curr->mic = &table->mic;
-		curr->over_lock = &table->over_lock;
 		i++;
 	}
 }
 
-bool	mise_en_place(t_input *input, t_table *table)
+bool	mise_en_place(t_philo *philo, t_table *table)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	table->start = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	table->over = false;
-	if (!mep_alloc(input, table))
+	philo->start = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	philo->over = false;
+	if (!mep_alloc(philo, table))
 		return (false);
-	mep_mutex(input, table);
-	mep_seat(input, table);
+	mep_mutex(philo, table);
+	mep_seat(philo, table);
 	return (true);
 }

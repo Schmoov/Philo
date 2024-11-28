@@ -6,13 +6,13 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 14:21:42 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 17:15:15 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-bool	parse(int argc, char **argv, t_input *input)
+bool	parse(int argc, char **argv, t_philo *input)
 {
 	int		i;
 	int		*ptr;
@@ -30,7 +30,7 @@ bool	parse(int argc, char **argv, t_input *input)
 	return (!err);
 }
 
-void	bon_apetit(t_input *input, t_table *table)
+void	bon_apetit(t_philo *input, t_table *table)
 {
 	int			i;
 	pthread_t	curr;
@@ -38,13 +38,13 @@ void	bon_apetit(t_input *input, t_table *table)
 	i = 0;
 	while (i < input->nb)
 	{
-		pthread_create(&curr, NULL, philosophize, &(table->seat[i]));
+		pthread_create(&curr, NULL, philosophize, &table->seat[i]);
 		table->thread[i] = curr;
 		i++;
 	}
 }
 
-void	reaper(t_input *input, t_table *table)
+void	reaper(t_philo *philo, t_table *table)
 {
 	int				i;
 	int				time;
@@ -57,52 +57,44 @@ void	reaper(t_input *input, t_table *table)
 		usleep(5);
 		i = 0;
 		gettimeofday(&tv, NULL);
-		time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - table->start;
-		pthread_mutex_lock(&table->over_lock);
-		while (i < input->nb)
+		time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - philo->start;
+		pthread_mutex_lock(&table->state);
+		casualty = -1;
+		all_fed = true;
+		while (i < philo->nb)
 		{
-			casualty = -1;
-			all_fed = true;
 			if (table->seat[i].death < time)
 			{
 				casualty = i;
 				break;
 			}
-			if (table->seat[i].meal < input->servings)
+			if (table->seat[i].meal < philo->servings)
 				all_fed = false;
 			i++;
 		}
-		if (casualty != -1)
+		if (casualty != -1 || all_fed)
 		{
-			table->over = true;
-			pthread_mutex_lock(&table->mic);
-			printf("%d %d died\n", time, i + 1);
-			pthread_mutex_unlock(&table->mic);
+			philo->over = true;
+			if (casualty != -1)
+				printf("%d %d died\n", time, i + 1);
+			pthread_mutex_unlock(&table->state);
 			return;
 		}
-		else if (all_fed)
-		{
-			table->over = true;
-			return ;
-		}
-		pthread_mutex_unlock(&table->over_lock);
+		pthread_mutex_unlock(&table->state);
 	}
 }
 
-void	wrap_up(t_input *input, t_table *table)
+void	wrap_up(t_philo *philo, t_table *table)
 {
 	int	i;
 
 	i = 0;
-	while (i < input->nb)
+	while (i < philo->nb)
 		pthread_join(table->thread[i++], NULL);
 	i = 0;
-	while (i < input->nb)
-	{
+	while (i < philo->nb)
 		pthread_mutex_destroy(&table->fork[i++]);
-	}
-	pthread_mutex_destroy(&table->over_lock);
-	pthread_mutex_destroy(&table->mic);
+	pthread_mutex_destroy(&table->state);
 	free(table->thread);
 	free(table->fork);
 	free(table->seat);
@@ -110,7 +102,7 @@ void	wrap_up(t_input *input, t_table *table)
 
 int	main(int argc, char **argv)
 {
-	t_input	input;
+	t_philo	input;
 	t_table	table;
 
 	if (argc < 5 || argc > 6)

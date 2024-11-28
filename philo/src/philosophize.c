@@ -6,12 +6,11 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 13:35:13 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 14:26:30 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
-#include <pthread.h>
 
 void	philo_skip_first(t_param *param)
 {
@@ -54,7 +53,9 @@ void	philo_eat(t_param *param, bool is_over)
 	{
 		log_eat(param);
 		usleep(param->eat * 1000);
+		pthread_mutex_lock(param->over_lock);
 		param->meal++;
+		pthread_mutex_unlock(param->over_lock);
 		param->skip++;
 	}
 	pthread_mutex_unlock(param->first);
@@ -78,7 +79,7 @@ void	*philosophize(void *param)
 	while (1)
 	{
 		philo_skip_loop(p);
-		is_over = philo_get_forks(p);
+		is_over = !philo_get_forks(p);
 		philo_eat(p, is_over);
 		if (is_over)
 			break;

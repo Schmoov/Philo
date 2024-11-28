@@ -6,13 +6,11 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 13:19:10 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 14:21:42 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
-#include <pthread.h>
-#include <sys/time.h>
 
 bool	parse(int argc, char **argv, t_input *input)
 {

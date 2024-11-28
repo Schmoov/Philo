@@ -6,12 +6,11 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 13:39:05 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 14:02:57 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
-#include <sys/time.h>
 
 bool	mep_alloc(t_input *input, t_table *table)
 {

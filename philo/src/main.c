@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 17:15:15 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/28 18:03:47 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,12 @@ int	main(int argc, char **argv)
 	if (!parse(argc, argv, &input))
 	{
 		printf("User skill issue\n");
+		return (1);
+	}
+	if (input.nb == 1 && input.servings)
+	{
+		printf("0 1 died\n(He did not bother sitting,"
+			" and committed seppuku with the fork)\n");
 		return (1);
 	}
 	if (!mise_en_place(&input, &table))

@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 18:13:50 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/29 18:45:25 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,10 @@ void	*philosophize(void *param)
 	t_param	*p;
 
 	p = param;
+	pthread_mutex_lock(p->state);
+	if (p->phi->over)
+		return (pthread_mutex_unlock(p->state), NULL);
+	pthread_mutex_unlock(p->state);
 	philo_skip_first(p);
 	pthread_mutex_lock(p->state);
 	while (!p->phi->over)

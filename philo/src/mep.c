@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 18:12:32 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/29 18:58:34 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,26 @@ bool	mep_alloc(t_philo *input, t_table *table)
 	return (true);
 }
 
-void	mep_mutex(t_philo *input, t_table *table)
+bool	mep_mutex(t_philo *input, t_table *table)
 {
 	int	i;
+	int	j;
 
 	pthread_mutex_init(&table->state, NULL);
 	i = 0;
 	while (i < input->nb)
-		pthread_mutex_init(&table->fork[i++], NULL);
+	{
+		if (pthread_mutex_init(&table->fork[i], NULL))
+			break ;
+		i++;
+	}
+	if (i == input->nb)
+		return (true);
+	j = 0;
+	while (j < i)
+		pthread_mutex_destroy(&table->fork[j++]);
+	table_destroy(table);
+	return (false);
 }
 
 void	mep_seat(t_philo *philo, t_table *table)

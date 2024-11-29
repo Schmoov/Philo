@@ -6,11 +6,12 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/11/28 18:15:28 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/29 19:08:50 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
+#include <bits/pthreadtypes.h>
 
 bool	parse(int argc, char **argv, t_philo *input)
 {
@@ -30,74 +31,72 @@ bool	parse(int argc, char **argv, t_philo *input)
 	return (!err);
 }
 
-void	bon_apetit(t_philo *input, t_table *table)
+bool	bon_apetit(t_philo *input, t_table *table)
 {
 	int			i;
 	pthread_t	curr;
 
+	pthread_mutex_lock(&table->state);
 	i = 0;
 	while (i < input->nb)
 	{
-		pthread_create(&curr, NULL, philosophize, &table->seat[i]);
+		if (pthread_create(&curr, NULL, philosophize, &table->seat[i]))
+			break ;
 		table->thread[i] = curr;
 		i++;
 	}
+	if (i < input->nb)
+		return (thread_failed(input, table, i), false);
+	pthread_mutex_unlock(&table->state);
+	return (true);
+}
+
+int	reaper_helper(t_philo *philo, t_table *table, int *casualty, bool *all_fed)
+{
+	int				i;
+	int				time;
+	struct timeval	tv;
+
+	i = 0;
+	gettimeofday(&tv, NULL);
+	time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - philo->start;
+	while (i < philo->nb)
+	{
+		if (table->seat[i].death < time)
+		{
+			*casualty = i;
+			break ;
+		}
+		if (table->seat[i].meal < philo->servings)
+			*all_fed = false;
+		i++;
+	}
+	return (time);
 }
 
 void	reaper(t_philo *philo, t_table *table)
 {
-	int				i;
-	int				time;
-	int				casualty;
-	bool			all_fed;
-	struct timeval	tv;
+	int		time;
+	int		casualty;
+	bool	all_fed;
 
 	while (1)
 	{
 		usleep(5);
-		i = 0;
-		gettimeofday(&tv, NULL);
-		time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - philo->start;
 		pthread_mutex_lock(&table->state);
 		casualty = -1;
 		all_fed = true;
-		while (i < philo->nb)
-		{
-			if (table->seat[i].death < time)
-			{
-				casualty = i;
-				break ;
-			}
-			if (table->seat[i].meal < philo->servings)
-				all_fed = false;
-			i++;
-		}
+		time = reaper_helper(philo, table, &casualty, &all_fed);
 		if (casualty != -1 || all_fed)
 		{
 			philo->over = true;
 			if (casualty != -1)
-				printf("%d %d died\n", time, i + 1);
+				printf("%d %d died\n", time, casualty + 1);
 			pthread_mutex_unlock(&table->state);
 			return ;
 		}
 		pthread_mutex_unlock(&table->state);
 	}
-}
-
-void	wrap_up(t_philo *philo, t_table *table)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo->nb)
-		pthread_join(table->thread[i++], NULL);
-	i = 0;
-	while (i < philo->nb)
-		pthread_mutex_destroy(&table->fork[i++]);
-	pthread_mutex_destroy(&table->state);
-	free(table->thread);
-	free(table->fork);
-	free(table->seat);
 }
 
 int	main(int argc, char **argv)
@@ -108,10 +107,7 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 		return (printf("Usage: philo nb die eat sleep [meals]\n"));
 	if (!parse(argc, argv, &input))
-	{
-		printf("User skill issue\n");
-		return (1);
-	}
+		return (printf("User skill issue\n"));
 	if (input.nb == 1 && input.servings)
 	{
 		printf("0 1 died\n(He did not bother sitting,"
@@ -119,11 +115,10 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	if (!mise_en_place(&input, &table))
+		return (printf("The dining room is full\n"));
+	if (bon_apetit(&input, &table))
 	{
-		printf("The dining room is full\n");
-		return (1);
+		reaper(&input, &table);
+		wrap_up(&input, &table);
 	}
-	bon_apetit(&input, &table);
-	reaper(&input, &table);
-	wrap_up(&input, &table);
 }

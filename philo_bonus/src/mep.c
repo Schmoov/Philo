@@ -6,49 +6,31 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/11/29 19:21:34 by parden           ###   ########.fr       */
+/*   Updated: 2024/11/29 21:25:57 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../philo.h"
+#include "../philo_bonus.h"
+#include <fcntl.h>
 
 bool	mep_alloc(t_philo *input, t_table *table)
 {
 	int	n;
 
 	n = input->nb;
-	table->thread = malloc(n * sizeof(pthread_t));
-	if (!table->thread)
+	table->child = malloc(n * sizeof(pid_t));
+	if (!table->child)
 		return (false);
-	table->fork = malloc(n * sizeof(pthread_mutex_t));
-	if (!table->fork)
-		return (free(table->thread), false);
 	table->seat = malloc(n * sizeof(t_param));
 	if (!table->seat)
-		return (free(table->thread), free(table->fork), false);
+		return (free(table->child), false);
 	return (true);
 }
 
-bool	mep_mutex(t_philo *input, t_table *table)
+void	mep_sem(t_philo *input, t_table *table)
 {
-	int	i;
-	int	j;
-
-	pthread_mutex_init(&table->state, NULL);
-	i = 0;
-	while (i < input->nb)
-	{
-		if (pthread_mutex_init(&table->fork[i], NULL))
-			break ;
-		i++;
-	}
-	if (i == input->nb)
-		return (true);
-	j = 0;
-	while (j < i)
-		pthread_mutex_destroy(&table->fork[j++]);
-	table_destroy(table);
-	return (false);
+	table->state = sem_open("state", O_CREAT, 0600, 1);
+	table->fork = sem_open("fork", O_CREAT, 0600, 2 * input->nb);
 }
 
 void	mep_seat(t_philo *philo, t_table *table)
@@ -65,17 +47,8 @@ void	mep_seat(t_philo *philo, t_table *table)
 		curr->meal = 0;
 		curr->skip = i / 2;
 		curr->death = philo->die;
-		curr->state = &table->state;
-		if (i)
-		{
-			curr->first = &table->fork[i];
-			curr->second = &table->fork[i - 1];
-		}
-		else
-		{
-			curr->first = &table->fork[philo->nb - 1];
-			curr->second = &table->fork[0];
-		}
+		curr->state = table->state;
+		curr->fork = table->fork;
 		i++;
 	}
 }
@@ -89,8 +62,7 @@ bool	mise_en_place(t_philo *philo, t_table *table)
 	philo->over = false;
 	if (!mep_alloc(philo, table))
 		return (false);
-	if (!mep_mutex(philo, table))
-		return (false);
+	mep_sem(philo, table);
 	mep_seat(philo, table);
 	return (true);
 }

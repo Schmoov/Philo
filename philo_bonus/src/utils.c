@@ -6,7 +6,7 @@
 /*   By: parden <parden@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 11:32:44 by parden            #+#    #+#             */
-/*   Updated: 2024/11/29 21:20:52 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/02 18:54:53 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,19 +39,3 @@ void	table_destroy(t_table *table)
 	free(table->child);
 	free(table->seat);
 }
-
-/*
-void	wrap_up(t_philo *philo, t_table *table)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo->nb)
-		pthread_join(table->thread[i++], NULL);
-	i = 0;
-	while (i < philo->nb)
-		pthread_mutex_destroy(&table->fork[i++]);
-	pthread_mutex_destroy(&table->state);
-	table_destroy(table);
-}
-*/

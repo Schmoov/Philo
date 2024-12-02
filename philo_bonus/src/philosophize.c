@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/11/29 21:17:53 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/02 19:28:15 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	philo_eat(t_param *p)
 	log_think(p);
 }
 
-void	philosophize(void *param)
+void	*philosophize(void *param)
 {
 	t_param	*p;
 
@@ -77,4 +77,28 @@ void	philosophize(void *param)
 		sem_wait(p->state);
 	}
 	sem_post(p->state);
+	table_destroy(p->table);
+}
+
+void	introspect(void *param)
+{
+	t_param		*p;
+	pthread_t	think;
+
+	p = param;
+	sem_wait(p->state);
+	sem_post(p->state);
+	pthread_create(&think, NULL, philosophize, param);
+	philo_skip_first(p);
+	sem_wait(p->state);
+	while (!p->phi->over)
+	{
+		sem_post(p->state);
+		philo_skip_loop(p);
+		philo_get_forks(p);
+		philo_eat(p);
+		sem_wait(p->state);
+	}
+	sem_post(p->state);
+	table_destroy(p->table);
 }

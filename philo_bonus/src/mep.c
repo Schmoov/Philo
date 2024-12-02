@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/11/29 21:25:57 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/02 18:49:11 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void	mep_seat(t_philo *philo, t_table *table)
 	{
 		curr = &table->seat[i];
 		curr->phi = philo;
+		curr->table = table;
 		curr->id = i + 1;
 		curr->meal = 0;
 		curr->skip = i / 2;

@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
-/*   Updated: 2024/11/29 21:25:20 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/02 19:28:25 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@
 # include <stdbool.h>
 # include <limits.h>
 # include <unistd.h>
+# include <pthread.h>
 # include <sys/time.h>
 # include <fcntl.h>
 # include <semaphore.h>
+# include <sys/wait.h>
 
 typedef struct s_philo {
 	int		nb;
@@ -34,6 +36,7 @@ typedef struct s_philo {
 
 typedef struct s_param {
 	t_philo	*phi;
+	void	*table;
 
 	int		id;
 	int		meal;
@@ -60,6 +63,7 @@ int		get_int(char *nptr, bool *err);
 bool	parse(int argc, char **argv, t_philo *input);
 bool	bon_apetit(t_philo *input, t_table *table);
 
+void	table_destroy(t_table *table);
 bool	mep_alloc(t_philo *input, t_table *table);
 void	mep_sem(t_philo *input, t_table *table);
 void	mep_seat(t_philo *philo, t_table *table);
@@ -69,6 +73,6 @@ void	philo_skip_first(t_param *p);
 void	philo_skip_loop(t_param *p);
 void	philo_get_forks(t_param *p);
 void	philo_eat(t_param *p);
-void	philosophize(void *param);
+void	*philosophize(void *param);
 
 #endif

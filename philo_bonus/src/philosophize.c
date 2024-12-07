@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/12/02 19:28:15 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/07 19:08:18 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,41 +64,70 @@ void	*philosophize(void *param)
 	t_param	*p;
 
 	p = param;
-	sem_wait(p->state);
-	sem_post(p->state);
+	sem_wait(p->sem);
+	sem_post(p->sem);
 	philo_skip_first(p);
-	sem_wait(p->state);
-	while (!p->phi->over)
+	sem_wait(p->sem);
+	while (!p->intro.over)
 	{
-		sem_post(p->state);
+		sem_post(p->sem);
 		philo_skip_loop(p);
 		philo_get_forks(p);
 		philo_eat(p);
-		sem_wait(p->state);
+		sem_wait(p->sem);
 	}
-	sem_post(p->state);
-	table_destroy(p->table);
+	sem_post(p->sem);
+	return (NULL);
 }
 
-void	introspect(void *param)
+void	intro_param_init(t_param *p, int i)
 {
-	t_param		*p;
+	char	sem[9] = "intro";
+
+	sem[5] = '0' + (i + 1) / 100;
+	sem[6] = '0' + ((i + 1) / 10 % 10);
+	sem[7] = '0' + ((i + 1) % 10);
+	sem[8] = 0;
+	p->intro.id = i + 1;
+	p->intro.meal = 0;
+	p->intro.skip = i / 2;
+	p->intro.death = p->phi->die;
+	p->intro.over = false;
+	p->sem = sem_open(sem, O_CREAT, 0600, 1);
+
+}
+
+bool	introspect(t_philo *phi, int i)
+{
+	t_param		param;
 	pthread_t	think;
 
-	p = param;
-	sem_wait(p->state);
-	sem_post(p->state);
-	pthread_create(&think, NULL, philosophize, param);
-	philo_skip_first(p);
-	sem_wait(p->state);
-	while (!p->phi->over)
+
+	param.phi = phi;
+	intro_param_init(&param, i);
+	sem_wait(param.sem);
+	pthread_create(&think, NULL, philosophize, &param);
+	sem_wait(phi->state);
+	sem_post(phi->state);
+	sem_post(param.sem);
+	while (1)
 	{
-		sem_post(p->state);
-		philo_skip_loop(p);
-		philo_get_forks(p);
-		philo_eat(p);
-		sem_wait(p->state);
+		usleep(5);
+		sem_wait(param.sem);
+		if (param.intro.meal >= phi->servings)
+		{
+			param.intro.over = true;
+			break;
+		}
+		if (param.intro.death <= time)
+		{
+			param.intro.over = true;
+			break;
+		}
+		sem_post(param.sem);
 	}
-	sem_post(p->state);
-	table_destroy(p->table);
+	sem_post(param.sem);
+	pthread_join(think, NULL);
+	free(phi->child);
+	return (param.intro.meal >= phi->servings);
 }

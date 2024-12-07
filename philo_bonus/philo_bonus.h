@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
-/*   Updated: 2024/12/07 19:04:25 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/07 19:59:43 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ typedef struct s_philo {
 	sem_t	*state;
 	sem_t	*fork;
 	pid_t	*child;
-}		t_philo;
+}			t_philo;
 
 typedef struct s_intro {
 	int		id;

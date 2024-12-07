@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/12/07 18:35:04 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/07 19:59:39 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ bool	bon_apetit(t_philo *philo)
 		curr = fork();
 		if (!curr)
 		{
-			introspect(i);
+			introspect(philo, i);
 			exit(420);
 		}
 		philo->child[i++] = curr;
@@ -65,32 +65,47 @@ bool	bon_apetit(t_philo *philo)
 	return (true);
 }
 
-/*
-void reaper(t_philo *input, t_table *table)
+void wrap_up(t_philo *phi, pid_t child)
+{
+	int				i;
+	struct timeval	time;
+	int				ms;
+
+	gettimeofday(&time, NULL);
+	ms = time.tv_sec * 1000 + time.tv_usec / 1000 - phi->start;
+	if (child != -1)
+		printf("%d %d died\n", ms, child + 1);
+	i = 0;
+	while (i < phi->nb)
+	{
+		if (kill(phi->child[i], 0))
+			kill(phi->child[i], SIGTERM);
+		i++;
+	}
+
+	while (i < phi->nb)
+			waitpid(phi->child[i], NULL, 0);
+}
+
+void reaper(t_philo *phi)
 {
 	int		status;
 	pid_t	child;
+	int		fed;
 
-	while (1)
+	fed = 0;
+	while (fed < phi->nb)
 	{
 		child = waitpid(0, &status, WNOHANG);
+		sem_wait(phi->state);
 		if (child && !WEXITSTATUS(status))
-			return (wrap_up(input, 
-
-}
-*/
-void wrap_up(t_philo *input, t_table *table, pid_t child)
-{
-	int	i;
-
-	i = 0;
-	while (i < input->nb)
-	{
-		if (i != child)
-			waitpid(table->child[i], NULL, 0);
-		i++;
+			return (wrap_up(phi, child));
+		sem_post(phi->state);
+		if (child)
+			fed++;
 	}
-	table_destroy(table);
+	sem_wait(phi->state);
+	wrap_up(phi, -1);
 }
 
 int	main(int argc, char **argv)
@@ -110,6 +125,6 @@ int	main(int argc, char **argv)
 	if (!mise_en_place(&philo))
 		return (printf("The dining room is full\n"));
 	bon_apetit(&philo);
-	//reaper(&philo, &table);
+	reaper(&philo);
 	//wrap_up(&philo, &table);
 }

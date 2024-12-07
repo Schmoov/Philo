@@ -6,21 +6,6 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:50:43 by parden            #+#    #+#             */
-/*   Updated: 2024/12/07 18:30:17 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/07 19:37:30 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "../philo_bonus.h"
-#include <fcntl.h>
-
-bool	mep_alloc(t_philo *philo)
-{
-	int	n;
-
-	n = philo->nb;
-}
-
-void	mep_sem(t_philo *philo)
-{
-}
-

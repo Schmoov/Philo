@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/12/07 19:31:43 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/08 21:35:23 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,18 +82,17 @@ void	*philosophize(void *param)
 
 void	intro_param_init(t_param *p, int i)
 {
-	char	sem[9] = "intro";
-
-	sem[5] = '0' + (i + 1) / 100;
-	sem[6] = '0' + ((i + 1) / 10 % 10);
-	sem[7] = '0' + ((i + 1) % 10);
-	sem[8] = 0;
+	p->str_sem[0] = 'I';
+	p->str_sem[1] = '0' + (i + 1) / 100;
+	p->str_sem[2] = '0' + ((i + 1) / 10 % 10);
+	p->str_sem[3] = '0' + ((i + 1) % 10);
+	p->str_sem[4] = 0;
 	p->intro.id = i + 1;
 	p->intro.meal = 0;
 	p->intro.skip = i / 2;
 	p->intro.death = p->phi->die;
 	p->intro.over = false;
-	p->sem = sem_open(sem, O_CREAT, 0600, 1);
+	p->sem = sem_open(p->str_sem, O_CREAT, 0600, 1);
 
 }
 
@@ -125,6 +124,7 @@ bool	introspect(t_philo *phi, int i)
 {
 	t_param		param;
 	pthread_t	think;
+	bool		ret;
 
 
 	param.phi = phi;
@@ -133,6 +133,11 @@ bool	introspect(t_philo *phi, int i)
 	pthread_create(&think, NULL, philosophize, &param);
 	introspect_loop(&param);
 	pthread_join(think, NULL);
+	sem_close(param.sem);
+	sem_close(phi->state);
+	sem_close(phi->fork);
+	sem_unlink(param.str_sem);
+	ret = param.intro.meal >= phi->servings;
 	free(phi->child);
-	return (param.intro.meal >= phi->servings);
+	exit(ret);
 }

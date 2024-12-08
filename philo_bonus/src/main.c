@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/12/07 19:59:39 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/08 21:26:48 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void wrap_up(t_philo *phi, pid_t child)
 
 	gettimeofday(&time, NULL);
 	ms = time.tv_sec * 1000 + time.tv_usec / 1000 - phi->start;
-	if (child != -1)
+	//if (child != -1)
 		printf("%d %d died\n", ms, child + 1);
 	i = 0;
 	while (i < phi->nb)
@@ -84,7 +84,16 @@ void wrap_up(t_philo *phi, pid_t child)
 	}
 
 	while (i < phi->nb)
+	{
+		if (i != child)
 			waitpid(phi->child[i], NULL, 0);
+		i++;
+	}
+	free(phi->child);
+	sem_close(phi->fork);
+	sem_unlink("fork");
+	sem_close(phi->state);
+	sem_unlink("state");
 }
 
 void reaper(t_philo *phi)

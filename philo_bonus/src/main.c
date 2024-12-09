@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/12/09 15:06:11 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/09 19:02:09 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@ bool	mise_en_place(t_philo *philo)
 	if (!philo->child)
 		return (false);
 	philo->state = sem_open("state", O_CREAT, 0600, 1);
+	if (philo->state == SEM_FAILED)
+		return (free(philo->child), false);
 	philo->fork = sem_open("fork", O_CREAT, 0600, 2 * philo->nb);
+	if (philo->fork == SEM_FAILED)
+		return (free(philo->child), sem_close(philo->state), sem_unlink("state"), false);
 	return (true);
 }
 
@@ -58,13 +62,18 @@ bool	bon_apetit(t_philo *philo)
 		{
 			introspect(philo, i);
 		}
+		if (curr == -1)
+			wrap_up(philo, -1, i, false);
 		philo->child[i++] = curr;
 	}
+	curr = waitpid(0, NULL, WNOHANG);
+	if (curr)
+		wrap_up(philo, curr, INT_MAX, false);
 	sem_post(philo->state);
 	return (true);
 }
 
-void wrap_up(t_philo *phi, pid_t child)
+void	wrap_up(t_philo *phi, pid_t child, int max, bool print)
 {
 	int				i;
 	struct timeval	time;
@@ -77,12 +86,11 @@ void wrap_up(t_philo *phi, pid_t child)
 	{
 		if (kill(phi->child[i], 0))
 			kill(phi->child[i], SIGTERM);
-		if (phi->child[i] == child)
+		if (phi->child[i] == child && print)
 			printf("%d %d died\n", ms, i + 1);
 		i++;
 	}
-
-	while (i < phi->nb)
+	while (i < phi->nb && i < max)
 	{
 		if (i != child)
 			waitpid(phi->child[i], NULL, 0);
@@ -93,9 +101,10 @@ void wrap_up(t_philo *phi, pid_t child)
 	sem_unlink("fork");
 	sem_close(phi->state);
 	sem_unlink("state");
+	exit(420);
 }
 
-void reaper(t_philo *phi)
+void	reaper(t_philo *phi)
 {
 	int		status;
 	pid_t	child;
@@ -107,13 +116,13 @@ void reaper(t_philo *phi)
 		child = waitpid(0, &status, WNOHANG);
 		sem_wait(phi->state);
 		if (child && !WEXITSTATUS(status))
-			return (wrap_up(phi, child));
+			return (wrap_up(phi, child, INT_MAX, true));
 		sem_post(phi->state);
 		if (child)
 			fed++;
 	}
 	sem_wait(phi->state);
-	wrap_up(phi, -1);
+	wrap_up(phi, -1, INT_MAX, false);
 }
 
 int	main(int argc, char **argv)
@@ -134,5 +143,4 @@ int	main(int argc, char **argv)
 		return (printf("The dining room is full\n"));
 	bon_apetit(&philo);
 	reaper(&philo);
-	//wrap_up(&philo, &table);
 }

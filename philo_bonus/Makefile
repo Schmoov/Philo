@@ -1,4 +1,4 @@
-CC := cc -g
+CC := cc -g3
 CFLAGS := -Wall -Wextra #-Werror
 LIB := -pthread
 

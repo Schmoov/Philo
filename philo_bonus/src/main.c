@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/12/08 21:26:48 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/09 15:06:11 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ bool	bon_apetit(t_philo *philo)
 		if (!curr)
 		{
 			introspect(philo, i);
-			exit(420);
 		}
 		philo->child[i++] = curr;
 	}
@@ -73,13 +72,13 @@ void wrap_up(t_philo *phi, pid_t child)
 
 	gettimeofday(&time, NULL);
 	ms = time.tv_sec * 1000 + time.tv_usec / 1000 - phi->start;
-	//if (child != -1)
-		printf("%d %d died\n", ms, child + 1);
 	i = 0;
 	while (i < phi->nb)
 	{
 		if (kill(phi->child[i], 0))
 			kill(phi->child[i], SIGTERM);
+		if (phi->child[i] == child)
+			printf("%d %d died\n", ms, i + 1);
 		i++;
 	}
 

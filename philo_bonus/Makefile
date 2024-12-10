@@ -1,11 +1,11 @@
-CC := cc -g3
-CFLAGS := -Wall -Wextra #-Werror
+CC := cc
+CFLAGS := -Wall -Wextra -Werror
 LIB := -pthread
 
 NAME := philo_bonus
 
 SRC_DIR := src/
-SRC := $(wildcard $(SRC_DIR)*.c)
+SRC := src/log.c src/main.c src/philosophize1.c src/philosophize2.c src/utils.c src/wrap.c
 
 OBJ_DIR := .obj/
 OBJ := $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))

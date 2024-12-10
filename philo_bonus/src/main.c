@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2024/12/09 19:02:09 by parden           ###   ########.fr       */
+/*   Updated: 2024/12/10 19:26:42 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,10 @@ bool	mise_en_place(t_philo *philo)
 	philo->state = sem_open("state", O_CREAT, 0600, 1);
 	if (philo->state == SEM_FAILED)
 		return (free(philo->child), false);
-	philo->fork = sem_open("fork", O_CREAT, 0600, 2 * philo->nb);
+	philo->fork = sem_open("fork", O_CREAT, 0600, philo->nb);
 	if (philo->fork == SEM_FAILED)
-		return (free(philo->child), sem_close(philo->state), sem_unlink("state"), false);
+		return (free(philo->child), sem_close(philo->state),
+			sem_unlink("state"), false);
 	return (true);
 }
 
@@ -71,37 +72,6 @@ bool	bon_apetit(t_philo *philo)
 		wrap_up(philo, curr, INT_MAX, false);
 	sem_post(philo->state);
 	return (true);
-}
-
-void	wrap_up(t_philo *phi, pid_t child, int max, bool print)
-{
-	int				i;
-	struct timeval	time;
-	int				ms;
-
-	gettimeofday(&time, NULL);
-	ms = time.tv_sec * 1000 + time.tv_usec / 1000 - phi->start;
-	i = 0;
-	while (i < phi->nb)
-	{
-		if (kill(phi->child[i], 0))
-			kill(phi->child[i], SIGTERM);
-		if (phi->child[i] == child && print)
-			printf("%d %d died\n", ms, i + 1);
-		i++;
-	}
-	while (i < phi->nb && i < max)
-	{
-		if (i != child)
-			waitpid(phi->child[i], NULL, 0);
-		i++;
-	}
-	free(phi->child);
-	sem_close(phi->fork);
-	sem_unlink("fork");
-	sem_close(phi->state);
-	sem_unlink("state");
-	exit(420);
 }
 
 void	reaper(t_philo *phi)

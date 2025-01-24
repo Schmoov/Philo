@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 16:22:20 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 17:15:18 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ void	introspect(t_param *p)
 			p->intro.over = true;
 			if (p->intro.death <= time)
 				log_death(p, time);
+			sem_post(sem);
 			return ;
-			break ;
 		}
 		sem_post(sem);
 	}

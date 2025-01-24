@@ -6,13 +6,14 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 16:32:22 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 16:35:56 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_BONUS_H
 # define PHILO_BONUS_H
 # include <stdio.h>
+# include <string.h>
 # include <stdlib.h>
 # include <stdbool.h>
 # include <limits.h>

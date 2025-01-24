@@ -14,7 +14,7 @@ void	clean_up(t_philo *p)
 		}
 		i++;
 	}
-	philo_destroy(p);
+	philo_destroy(p, true);
 }
 
 bool	bon_apetit(t_philo *philo)
@@ -54,4 +54,3 @@ void	reaper(t_philo *phi)
 	}
 	return ;
 }
-

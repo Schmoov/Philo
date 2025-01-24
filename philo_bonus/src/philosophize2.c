@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 16:31:47 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 17:05:28 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,9 @@ void	philo_skip_loop(t_param *p)
 
 void	philo_get_forks(t_param *p)
 {
-	struct timeval	time;
-
 	sem_wait(p->phi->fork);
 	log_str(p, "has taken a fork");
 	sem_wait(p->phi->fork);
-	gettimeofday(&time, NULL);
 	sem_wait(p->phi->sem[p->intro.id]);
 	p->intro.death = get_time() + p->phi->die - p->phi->start;
 	sem_post(p->phi->sem[p->intro.id]);

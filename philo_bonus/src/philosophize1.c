@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 17:15:18 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 17:33:51 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	introspect(t_param *p)
 	}
 }
 
-void intro_init(t_philo *phi, t_param *par, int i)
+void	intro_init(t_philo *phi, t_param *par, int i)
 {
 	par->intro.id = i;
 	par->intro.meal = 0;

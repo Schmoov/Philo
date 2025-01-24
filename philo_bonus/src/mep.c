@@ -1,20 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mep.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/24 17:32:26 by parden            #+#    #+#             */
+/*   Updated: 2025/01/24 17:35:22 by parden           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo_bonus.h"
-
-void	mep_sem_str(t_philo *p)
-{
-	int	i;
-
-	i = 0;
-	while (i < p->nb)
-	{
-		p->str_sem[i][0] = 'I';
-		p->str_sem[i][1] = '0' + (i + 1) / 100;
-		p->str_sem[i][2] = '0' + ((i + 1) / 10 % 10);
-		p->str_sem[i][3] = '0' + ((i + 1) % 10);
-		p->str_sem[i][4] = 0;
-		i++;
-	}
-}
 
 void	mep_sem_unlink(t_philo *p)
 {
@@ -78,13 +74,6 @@ bool	mep_alloc(t_philo *p)
 	return (true);
 }
 
-void	mep_free(t_philo *p)
-{
-	free(p->str_sem);
-	free(p->child);
-	free(p->sem);
-}
-
 bool	mise_en_place(t_philo *p)
 {
 	p->start = get_time();
@@ -95,13 +84,4 @@ bool	mise_en_place(t_philo *p)
 	if (!mep_sem(p))
 		return (mep_free(p), false);
 	return (true);
-}
-
-void	philo_destroy(t_philo *p, bool unlink)
-{
-	if (unlink)
-		mep_sem_unlink(p);
-	else
-		mep_sem_close(p);
-	mep_free(p);
 }

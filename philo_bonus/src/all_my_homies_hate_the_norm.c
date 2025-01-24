@@ -1,36 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   log.c                                              :+:      :+:    :+:   */
+/*   all_my_homies_hate_the_norm.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/25 19:44:51 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 17:32:12 by parden           ###   ########.fr       */
+/*   Created: 2025/01/24 17:35:03 by parden            #+#    #+#             */
+/*   Updated: 2025/01/24 17:35:21 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo_bonus.h"
 
-void	log_str(t_param *p, char *str)
+void	mep_sem_str(t_philo *p)
 {
-	sem_t	*sem;
+	int	i;
 
-	sem = p->phi->sem[p->intro.id];
-	sem_wait(sem);
-	if (p->intro.over)
+	i = 0;
+	while (i < p->nb)
 	{
-		sem_post(sem);
-		return ;
+		p->str_sem[i][0] = 'I';
+		p->str_sem[i][1] = '0' + (i + 1) / 100;
+		p->str_sem[i][2] = '0' + ((i + 1) / 10 % 10);
+		p->str_sem[i][3] = '0' + ((i + 1) % 10);
+		p->str_sem[i][4] = 0;
+		i++;
 	}
-	sem_wait(p->phi->state);
-	printf("%d %d %s\n", get_time() - p->phi->start, p->intro.id + 1, str);
-	sem_post(p->phi->state);
-	sem_post(sem);
-}
-
-void	log_death(t_param *p, int time)
-{
-	sem_wait(p->phi->state);
-	printf("%d %d died\n", time, p->intro.id + 1);
 }

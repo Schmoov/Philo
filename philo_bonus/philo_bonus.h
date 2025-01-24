@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 16:35:56 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 17:35:48 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,12 @@ bool	mise_en_place(t_philo *p);
 void	philo_destroy(t_philo *p, bool unlink);
 void	*philosophize(void *param);
 void	introspect(t_param *p);
-void intro_init(t_philo *phi, t_param *par, int i);
+void	intro_init(t_philo *phi, t_param *par, int i);
 bool	take_seat(t_philo *phi, int i);
 void	philo_skip_first(t_param *p);
 void	philo_skip_loop(t_param *p);
 void	philo_get_forks(t_param *p);
 void	philo_eat(t_param *p);
-int	get_int(char *nptr, bool *err);
-int	get_time();
+int		get_int(char *nptr, bool *err);
+int		get_time(void);
 #endif

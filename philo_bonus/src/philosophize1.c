@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/12/10 19:33:26 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/19 20:00:06 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,11 @@ void	*philosophize(void *param)
 
 bool	intro_param_init(t_param *p, int i)
 {
-	p->str_sem[0] = 'I';
-	p->str_sem[1] = '0' + (i + 1) / 100;
-	p->str_sem[2] = '0' + ((i + 1) / 10 % 10);
-	p->str_sem[3] = '0' + ((i + 1) % 10);
-	p->str_sem[4] = 0;
 	p->intro.id = i + 1;
 	p->intro.meal = 0;
 	p->intro.skip = i / 2;
 	p->intro.death = p->phi->die;
 	p->intro.over = false;
-	p->sem = sem_open(p->str_sem, O_CREAT, 0600, 1);
 	return (p->sem != SEM_FAILED);
 }
 

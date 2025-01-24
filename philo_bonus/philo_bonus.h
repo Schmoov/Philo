@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
-/*   Updated: 2024/12/09 18:59:59 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 14:08:32 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef struct s_philo {
 	int		start;
 	sem_t	*state;
 	sem_t	*fork;
+	char	(*str_sem)[5];
+	sem_t	**sem;
 	pid_t	*child;
 }			t_philo;
 
@@ -48,8 +50,6 @@ typedef struct s_intro {
 typedef struct s_param {
 	t_philo	*phi;
 	t_intro	intro;
-	char	str_sem[5];
-	sem_t	*sem;
 }			t_param;
 void	log_fork(t_param *p);
 void	log_eat(t_param *p);

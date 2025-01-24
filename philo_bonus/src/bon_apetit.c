@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 17:31:58 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 17:32:00 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 18:56:12 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	clean_up(t_philo *p)
 	i = 0;
 	while (i < p->nb)
 	{
-		if (p->child[i] != -1 && kill(p->child[i], 0))
+		if (p->child[i] != -1 && !kill(p->child[i], 0))
 		{
 			kill(p->child[i], SIGTERM);
 			waitpid(p->child[i], NULL, 0);

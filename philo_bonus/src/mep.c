@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 17:32:26 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 17:35:22 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 18:32:25 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,12 @@ bool	mep_alloc(t_philo *p)
 
 bool	mise_en_place(t_philo *p)
 {
-	p->start = get_time();
 	if (!mep_alloc(p))
 		return (false);
 	memset(p->child, -1, p->nb * sizeof(pid_t));
 	mep_sem_str(p);
 	if (!mep_sem(p))
 		return (mep_free(p), false);
+	p->start = get_time();
 	return (true);
 }

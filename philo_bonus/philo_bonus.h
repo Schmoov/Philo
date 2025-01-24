@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:49:56 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 14:08:32 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 16:32:22 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,22 +51,29 @@ typedef struct s_param {
 	t_philo	*phi;
 	t_intro	intro;
 }			t_param;
-void	log_fork(t_param *p);
-void	log_eat(t_param *p);
-void	log_sleep(t_param *p);
-void	log_think(t_param *p);
-bool	mise_en_place(t_philo *philo);
-bool	parse(int argc, char **argv, t_philo *input);
+
+void	clean_up(t_philo *p);
 bool	bon_apetit(t_philo *philo);
-void	wrap_up(t_philo *phi, pid_t child, int max, bool print);
 void	reaper(t_philo *phi);
+void	log_str(t_param *p, char *str);
+void	log_death(t_param *p, int time);
+bool	parse(int argc, char **argv, t_philo *input);
+void	mep_sem_str(t_philo *p);
+void	mep_sem_unlink(t_philo *p);
+void	mep_sem_close(t_philo *p);
+bool	mep_sem(t_philo *p);
+bool	mep_alloc(t_philo *p);
+void	mep_free(t_philo *p);
+bool	mise_en_place(t_philo *p);
+void	philo_destroy(t_philo *p, bool unlink);
+void	*philosophize(void *param);
+void	introspect(t_param *p);
+void intro_init(t_philo *phi, t_param *par, int i);
+bool	take_seat(t_philo *phi, int i);
 void	philo_skip_first(t_param *p);
 void	philo_skip_loop(t_param *p);
 void	philo_get_forks(t_param *p);
 void	philo_eat(t_param *p);
-void	*philosophize(void *param);
-bool	intro_param_init(t_param *p, int i);
-void	introspect_loop(t_param *p);
-bool	introspect(t_philo *phi, int i);
-int		get_int(char *nptr, bool *err);
+int	get_int(char *nptr, bool *err);
+int	get_time();
 #endif

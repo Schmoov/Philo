@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2025/01/19 20:00:06 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 16:22:20 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,90 +15,76 @@
 void	*philosophize(void *param)
 {
 	t_param	*p;
+	sem_t	*sem;
 
 	p = param;
-	sem_wait(p->sem);
-	sem_post(p->sem);
+	sem = p->phi->sem[p->intro.id];
+	sem_wait(sem);
+	sem_post(sem);
 	philo_skip_first(p);
-	sem_wait(p->sem);
+	sem_wait(sem);
 	while (!p->intro.over)
 	{
-		sem_post(p->sem);
+		sem_post(sem);
 		philo_skip_loop(p);
 		philo_get_forks(p);
 		philo_eat(p);
-		sem_wait(p->sem);
+		sem_wait(sem);
 	}
-	sem_post(p->sem);
+	sem_post(sem);
 	return (NULL);
 }
 
-bool	intro_param_init(t_param *p, int i)
+void	introspect(t_param *p)
 {
-	p->intro.id = i + 1;
-	p->intro.meal = 0;
-	p->intro.skip = i / 2;
-	p->intro.death = p->phi->die;
-	p->intro.over = false;
-	return (p->sem != SEM_FAILED);
-}
+	int		time;
+	sem_t	*sem;
 
-void	introspect_loop(t_param *p)
-{
-	int				time;
-	struct timeval	tv;
-
+	sem = p->phi->sem[p->intro.id];
 	sem_wait(p->phi->state);
 	sem_post(p->phi->state);
-	sem_post(p->sem);
+	sem_post(sem);
 	while (1)
 	{
 		usleep(5);
-		gettimeofday(&tv, NULL);
-		time = tv.tv_sec * 1000 + tv.tv_usec / 1000 - p->phi->start;
-		sem_wait(p->sem);
+		sem_wait(sem);
+		time = get_time() - p->phi->start;
 		if (p->intro.meal >= p->phi->servings || p->intro.death <= time)
 		{
 			p->intro.over = true;
+			if (p->intro.death <= time)
+				log_death(p, time);
+			return ;
 			break ;
 		}
-		sem_post(p->sem);
+		sem_post(sem);
 	}
-	sem_post(p->sem);
 }
 
-void	thread_failed(t_philo *phi, t_param *param)
+void intro_init(t_philo *phi, t_param *par, int i)
 {
-	sem_close(param->sem);
-	sem_close(phi->state);
-	sem_close(phi->fork);
-	sem_unlink(param->str_sem);
-	free(phi->child);
-	exit(false);
+	par->intro.id = i;
+	par->intro.meal = 0;
+	par->intro.skip = i / 2;
+	par->intro.death = phi->die;
+	par->intro.over = false;
 }
 
-bool	introspect(t_philo *phi, int i)
+bool	take_seat(t_philo *phi, int i)
 {
 	t_param		param;
 	pthread_t	think;
 	bool		ret;
 
 	param.phi = phi;
-	if (!intro_param_init(&param, i))
+	intro_init(phi, &param, i);
+	sem_wait(phi->sem[i]);
+	if (!pthread_create(&think, NULL, philosophize, &param))
 	{
-		free(phi->child);
-		exit(false);
+		introspect(&param);
+		pthread_join(think, NULL);
 	}
-	sem_wait(param.sem);
-	if (pthread_create(&think, NULL, philosophize, &param))
-		thread_failed(phi, &param);
-	introspect_loop(&param);
-	pthread_join(think, NULL);
-	sem_close(param.sem);
-	sem_close(phi->state);
-	sem_close(phi->fork);
-	sem_unlink(param.str_sem);
 	ret = param.intro.meal >= phi->servings;
-	free(phi->child);
+	philo_destroy(phi, false);
 	exit(ret);
 }

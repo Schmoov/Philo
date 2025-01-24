@@ -17,7 +17,7 @@ void	clean_up(t_philo *p)
 	philo_destroy(p);
 }
 
-void	bon_apetit(t_philo *philo)
+bool	bon_apetit(t_philo *philo)
 {
 	int		i;
 	pid_t	curr;
@@ -28,12 +28,13 @@ void	bon_apetit(t_philo *philo)
 	{
 		curr = fork();
 		if (!curr)
-			introspect(philo, i);
+			take_seat(philo, i);
 		philo->child[i++] = curr;
 		if (curr == -1)
-			return (clean_up(philo));
+			return (clean_up(philo), false);
 	}
 	sem_post(philo->state);
+	return (true);
 }
 
 void	reaper(t_philo *phi)
@@ -46,14 +47,11 @@ void	reaper(t_philo *phi)
 	while (fed < phi->nb)
 	{
 		child = waitpid(0, &status, WNOHANG);
-		sem_wait(phi->state);
 		if (child && !WEXITSTATUS(status))
-			return (wrap_up(phi, child, INT_MAX, true));
-		sem_post(phi->state);
+			return ;
 		if (child)
 			fed++;
 	}
-	sem_wait(phi->state);
-	wrap_up(phi, -1, INT_MAX, false);
+	return ;
 }
 

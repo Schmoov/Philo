@@ -5,7 +5,7 @@ LIB := -pthread
 NAME := philo_bonus
 
 SRC_DIR := src/
-SRC := src/log.c src/main.c src/philosophize1.c src/philosophize2.c src/utils.c src/wrap.c
+SRC := $(wildcard $(SRC_DIR)/*)
 
 OBJ_DIR := .obj/
 OBJ := $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))

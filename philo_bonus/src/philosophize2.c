@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:48:49 by parden            #+#    #+#             */
-/*   Updated: 2024/12/10 19:28:55 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 16:31:47 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,26 +35,25 @@ void	philo_get_forks(t_param *p)
 	struct timeval	time;
 
 	sem_wait(p->phi->fork);
-	log_fork(p);
+	log_str(p, "has taken a fork");
 	sem_wait(p->phi->fork);
 	gettimeofday(&time, NULL);
-	sem_wait(p->sem);
-	p->intro.death = time.tv_sec * 1000 + time.tv_usec / 1000
-		+ p->phi->die - p->phi->start;
-	sem_post(p->sem);
+	sem_wait(p->phi->sem[p->intro.id]);
+	p->intro.death = get_time() + p->phi->die - p->phi->start;
+	sem_post(p->phi->sem[p->intro.id]);
 }
 
 void	philo_eat(t_param *p)
 {
-	log_eat(p);
+	log_str(p, "is eating");
 	usleep(p->phi->eat * 1000);
-	sem_wait(p->sem);
+	sem_wait(p->phi->sem[p->intro.id]);
 	p->intro.meal++;
-	sem_post(p->sem);
+	sem_post(p->phi->sem[p->intro.id]);
 	p->intro.skip++;
 	sem_post(p->phi->fork);
 	sem_post(p->phi->fork);
-	log_sleep(p);
+	log_str(p, "is sleeping");
 	usleep(p->phi->sleep * 1000);
-	log_think(p);
+	log_str(p, "is thinking");
 }

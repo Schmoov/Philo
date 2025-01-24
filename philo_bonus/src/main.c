@@ -6,12 +6,11 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 19:45:32 by parden            #+#    #+#             */
-/*   Updated: 2025/01/24 14:56:32 by parden           ###   ########.fr       */
+/*   Updated: 2025/01/24 16:33:06 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo_bonus.h"
-
 
 bool	parse(int argc, char **argv, t_philo *input)
 {
@@ -47,6 +46,7 @@ int	main(int argc, char **argv)
 	}
 	if (!mise_en_place(&philo))
 		return (printf("The dining room is full\n"));
-	bon_apetit(&philo);
-	reaper(&philo);
+	if (bon_apetit(&philo))
+		reaper(&philo);
+	clean_up(&philo);
 }

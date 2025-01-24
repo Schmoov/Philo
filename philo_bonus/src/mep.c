@@ -32,6 +32,17 @@ void	mep_sem_unlink(t_philo *p)
 	}
 }
 
+void	mep_sem_close(t_philo *p)
+{
+	int	i;
+
+	sem_close(p->state);
+	sem_close(p->fork);
+	i = 0;
+	while (i < p->nb && p->sem[i] != SEM_FAILED)
+		sem_close(p->sem[i++]);
+}
+
 bool	mep_sem(t_philo *p)
 {
 	int	i;
@@ -86,8 +97,11 @@ bool	mise_en_place(t_philo *p)
 	return (true);
 }
 
-void	philo_destroy(t_philo *p)
+void	philo_destroy(t_philo *p, bool unlink)
 {
-	mep_sem_unlink(p);
+	if (unlink)
+		mep_sem_unlink(p);
+	else
+		mep_sem_close(p);
 	mep_free(p);
 }
